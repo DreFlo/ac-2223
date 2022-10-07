@@ -17,32 +17,6 @@ def get_formatted_date(date_number):
 def get_client_sex_from_birth_number(date_number):
     return 'F' if int(str(date_number)[2:4]) >= 51 else 'M'
 
-# DATAFRAMES
-
-client_df = pd.read_csv('.\\ficheiros_competicao_dev\\client.csv', sep=';')
-
-# DATA PROCESSING
-
-#print(client_df.to_string())
-'''
-client_df['birthday'] = client_df['birth_number'].apply(get_formatted_date_from_birth_number)
-
-client_df['sex'] = client_df['birth_number'].apply(get_client_sex_from_birth_number)
-
-client_df = client_df.drop(columns=['birth_number'])
-
-print(client_df.head())
-'''
-
-trans_df = pd.read_csv('.\\ficheiros_competicao_dev\\trans_dev.csv', sep=';', low_memory=False)
-
-trans_df['date'] = pd.to_datetime(trans_df['date'].apply(get_formatted_date), infer_datetime_format=True)
-
-loan_df = pd.read_csv('.\\ficheiros_competicao_dev\\loan_dev.csv', sep=';', low_memory=False)
-
-loan_df['date'] = pd.to_datetime(loan_df['date'].apply(get_formatted_date), infer_datetime_format=True)
-
-#trans_df = trans_df[['account_id', 'amount', 'balance']].groupby(['account_id']).mean()
 
 def nearest(items, pivot):
     min_list = [i for i in items if i <= pivot]
@@ -54,7 +28,7 @@ def get_balance_at_date(row):
     account = row['account_id']
     date = row['date']
 
-    account_trans = trans_df[trans_df['account_id'] == account]
+    account_trans = trans_dev_df[trans_dev_df['account_id'] == account]
 
     print(account_trans)
 
@@ -66,6 +40,55 @@ def get_balance_at_date(row):
 
     return 0
 
-print(loan_df.head())
+# DATAFRAMES
+
+client_df = pd.read_csv('.\\ficheiros_competicao_dev\\client.csv', sep=';')
+
+account_df = pd.read_csv('.\\ficheiros_competicao_dev\\account.csv', sep=';', low_memory=False)
+
+trans_dev_df = pd.read_csv('.\\ficheiros_competicao_dev\\trans_dev.csv', sep=';', low_memory=False)
+
+loan_dev_df = pd.read_csv('.\\ficheiros_competicao_dev\\loan_dev.csv', sep=';', low_memory=False)
+
+card_dev_df = pd.read_csv('.\\ficheiros_competicao_dev\\card_dev.csv', sep=';', low_memory=False)
+
+disp_df = pd.read_csv('.\\ficheiros_competicao_dev\\disp.csv', sep=';', low_memory=False)
+
+district_df = pd.read_csv('.\\ficheiros_competicao_dev\\district.csv', sep=';', low_memory=False)
+
+# DATA PROCESSING
+
+# Format client birthday and determine sex
+
+client_df['birthday'] = pd.to_datetime(client_df['birth_number'].apply(get_formatted_date), infer_datetime_format=True)
+
+client_df['sex'] = client_df['birth_number'].apply(get_client_sex_from_birth_number)
+
+client_df = client_df.drop(columns=['birth_number'])
+
+# Format other dates
+
+account_df['acc_creation_date'] = pd.to_datetime(account_df['date'].apply(get_formatted_date), infer_datetime_format=True)
+
+account_df = account_df.drop(columns=['date'])
+
+trans_dev_df['trans_date'] = pd.to_datetime(trans_dev_df['date'].apply(get_formatted_date), infer_datetime_format=True)
+
+trans_dev_df = trans_dev_df.drop(columns=['date'])
+
+loan_dev_df['date'] = pd.to_datetime(loan_dev_df['date'].apply(get_formatted_date), infer_datetime_format=True)
+
+card_dev_df['issued'] = pd.to_datetime(card_dev_df['issued'].apply(get_formatted_date), infer_datetime_format=True)
+
+#trans_dev_df = trans_dev_df[['account_id', 'amount', 'balance']].groupby(['account_id']).mean()
+'''
+print(loan_dev_df.head())
 print()
-databse = loan_df.apply(get_balance_at_date, axis=1)
+databse = loan_dev_df.apply(get_balance_at_date, axis=1)
+'''
+
+#database_df = trans_dev_df.merge(account_df, on='account_id', how='inner')
+
+
+
+print(database_df.head())
